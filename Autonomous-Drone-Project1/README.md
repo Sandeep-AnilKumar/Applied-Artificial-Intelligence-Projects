@@ -6,12 +6,12 @@ This is a drone that can run on the road and fly in the sky. The drone is starte
 The drone starts moving forward, it then sees if there is an obstacle in front, defined by "FALSE" Boolean value, any other directions which has a Boolean value of "TRUE" is asserted and the drone moves in that direction. To keep it simple the order of movement is: - front, left, right, reverse, & fly. So if the drone is cornered from all the directions when it is running on the road, it will start flying. The same order of movements are held in the air, i.e.  Front, left, right, reverse. Usually in a real world scenario, a drone will check for hundreds of conditions like water-level, heat, battery, fuel, etc. And each one of them is received by a sensor. To keep it simple I am asking the user to enter the battery and fuel levels. 
 ###NOTE: - Please give the battery and fuel level values as an integer from 1 - 100, do not add % in the end. Just the numbers.
 I have three templates: - "Movement", "Fly" & "Stop".
-(deftemplate Movement (slot front) (slot left) (slot right) 
+```(deftemplate Movement (slot front) (slot left) (slot right) 
     (slot reverse) (slot fly) (slot battery (default 100)) (slot fuel (default 100)))
 (deftemplate Stop (slot front) (slot left) (slot right) 
     (slot reverse) (slot fly) (slot battery (default 100)) (slot fuel (default 100)))
 (deftemplate Fly (slot front) (slot left) (slot right) 
-    (slot reverse) (slot fly) (slot battery (default 100)) (slot fuel (default 100)))
+    (slot reverse) (slot fly) (slot battery (default 100)) (slot fuel (default 100)))```
 
 ###There are two modules: - startDrone and afterStart.
 startDrone has the initial rule to move forward, all other rules are in afterStart.
