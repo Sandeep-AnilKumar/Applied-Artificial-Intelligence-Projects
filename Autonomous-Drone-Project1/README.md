@@ -3,19 +3,28 @@
 
 ###The Domain: - Autonomous Drone
 This is a drone that can run on the road and fly in the sky. The drone is started by moving forward, after that it'll check the surroundings to make sure there are no obstacles. Every time I am taking an input from the user to enter the "Battery-Level" and "Fuel-Level". The maximum value for them is 100% which means battery is fully charged and the fuel tank is completely full. The minimum values for "battery and fuel level" is 10, to keep the drone running. If the user enters a value less than or equal to "10", then the drone stops.
+
+
 The drone starts moving forward, it then sees if there is an obstacle in front, defined by "FALSE" Boolean value, any other directions which has a Boolean value of "TRUE" is asserted and the drone moves in that direction. To keep it simple the order of movement is: - front, left, right, reverse, & fly. So if the drone is cornered from all the directions when it is running on the road, it will start flying. The same order of movements are held in the air, i.e.  Front, left, right, reverse. Usually in a real world scenario, a drone will check for hundreds of conditions like water-level, heat, battery, fuel, etc. And each one of them is received by a sensor. To keep it simple I am asking the user to enter the battery and fuel levels. 
 ###NOTE: - Please give the battery and fuel level values as an integer from 1 - 100, do not add % in the end. Just the numbers.
 I have three templates: - "Movement", "Fly" & "Stop".
-```(deftemplate Movement (slot front) (slot left) (slot right) 
+
+```
+(deftemplate Movement (slot front) (slot left) (slot right) 
     (slot reverse) (slot fly) (slot battery (default 100)) (slot fuel (default 100)))
 (deftemplate Stop (slot front) (slot left) (slot right) 
     (slot reverse) (slot fly) (slot battery (default 100)) (slot fuel (default 100)))
 (deftemplate Fly (slot front) (slot left) (slot right) 
-    (slot reverse) (slot fly) (slot battery (default 100)) (slot fuel (default 100)))```
+    (slot reverse) (slot fly) (slot battery (default 100)) (slot fuel (default 100)))
+```
 
 ###There are two modules: - startDrone and afterStart.
 startDrone has the initial rule to move forward, all other rules are in afterStart.
 My knowledge base is as given below.
+
+
+
+```
 (defmodule startDrone)
 (defrule moveForward1
     ?p <- (Movement {battery > 10 && fuel > 10} (front TRUE))
@@ -304,8 +313,11 @@ My knowledge base is as given below.
                 (fly ?p.fly) (battery ?*b*) (fuel ?*f*)))
     (printout t crlf "Battery or Fuel Low, Drone stopping!" crlf)
         (halt)))
+```
 
 ###I have one function to take the input from the user for battery and fuel levels: - enterBatteryAndFuel.
+
+```
 (deffunction enterBatteryAndFuel(?action)
     (printout t crlf "Drone is trying to " ?action crlf)
     (printout t "Please enter Battery-level in terms of percentage, for 15% enter only 15" crlf)
@@ -316,10 +328,13 @@ My knowledge base is as given below.
         (return TRUE)
         else
         (return FALSE)))
+```
+
 I start my drone with "100" battery and fuel values. These are given as the default values in the template. When the drone is running on the road, if the current fact is new it'll be asserted. The template "Movement" is asserted for drone's movement on road, "fly" while the drone is flying, and "stop" when the drone comes to a halt.
 
 ###Test cases: -
 ###Test case 1: -
+```
 Drone is trying to move forward
 Please enter Battery-level in terms of percentage, for 15% enter only 15
 100
@@ -409,8 +424,10 @@ Please enter fuel-level in terms of percentage, for 15% enter only 15
  ==> f-11 (MAIN::Stop (front TRUE) (left FALSE) (right TRUE) (reverse FALSE) (fly TRUE) (battery 10) (fuel 10))
 
 Battery or Fuel Low, Drone stopping!
+```
 
 ###Test case 2: -
+```
 Drone is trying to move forward
 Please enter Battery-level in terms of percentage, for 15% enter only 15
 56
@@ -492,8 +509,10 @@ Please enter fuel-level in terms of percentage, for 15% enter only 15
 
 Battery or Fuel Low, Drone stopping!
 For a total of 0 facts in module afterStart.
+```
 
 ###Test case 3: -
+```
 Drone is trying to move forward
 Please enter Battery-level in terms of percentage, for 15% enter only 15
 15
@@ -509,8 +528,10 @@ Please enter Battery-level in terms of percentage, for 15% enter only 15
 Please enter fuel-level in terms of percentage, for 15% enter only 15
 10
  ==> f-3 (MAIN::Stop (front FALSE) (left TRUE) (right TRUE) (reverse TRUE) (fly TRUE) (battery 10) (fuel 10))
+```
 
 ###Test case 4: -
+```
 Drone is trying to move forward
 Please enter Battery-level in terms of percentage, for 15% enter only 15
 5
@@ -520,8 +541,6 @@ Please enter fuel-level in terms of percentage, for 15% enter only 15
 
 Battery or Fuel Low, Drone stopping!
 For a total of 0 facts in module afterStart.
-
-Battery or Fuel Low, Drone stopping!
-For a total of 0 facts in module afterStart.
+```
 
 ###I have added (watch facts) to show whenever a fact is added or deleted.
