@@ -1,0 +1,397 @@
+// ~->[DNET-1]->~
+
+// File created by GmytrasiewiczP_2 at UIC using Netica 5.24 on Oct 21, 2016 at 02:50:48 UTC.
+
+bnet Sexual_Assault_Bayesian_Networ {
+AutoCompile = TRUE;
+autoupdate = TRUE;
+whenchanged = 1477018246;
+
+visual V1 {
+	defdispform = BELIEFBARS;
+	nodelabeling = TITLE;
+	NodeMaxNumEntries = 50;
+	nodefont = font {shape= "Arial"; size= 9;};
+	linkfont = font {shape= "Arial"; size= 9;};
+	windowposn = (125, 125, 1238, 581);
+	resolution = 72;
+	drawingbounds = (1520, 720);
+	showpagebreaks = FALSE;
+	usegrid = TRUE;
+	gridspace = (6, 6);
+	NodeSet Node {BuiltIn = 1; Color = 0x00e1e1e1;};
+	NodeSet Nature {BuiltIn = 1; Color = 0x00f8eed2;};
+	NodeSet Deterministic {BuiltIn = 1; Color = 0x00d3caa6;};
+	NodeSet Finding {BuiltIn = 1; Color = 0x00c8c8c8;};
+	NodeSet Constant {BuiltIn = 1; Color = 0x00ffffff;};
+	NodeSet ConstantValue {BuiltIn = 1; Color = 0x00ffffb4;};
+	NodeSet Utility {BuiltIn = 1; Color = 0x00ffbdbd;};
+	NodeSet Decision {BuiltIn = 1; Color = 0x00dee8ff;};
+	NodeSet Documentation {BuiltIn = 1; Color = 0x00f0fafa;};
+	NodeSet Title {BuiltIn = 1; Color = 0x00ffffff;};
+	PrinterSetting A {
+		margins = (1270, 1270, 1270, 1270);
+		};
+	};
+
+node Previous_Offense_by_Victim {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Yes, No);
+	parents = ();
+	probs = 
+		// Yes          No           
+		  (0.6,         0.4);
+	whenchanged = 1477016802;
+	belief = (0.6, 0.4);
+	visual V1 {
+		center = (1200, 72);
+		height = 3;
+		};
+	};
+
+node Weak_punishment_after_offense {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (True, False);
+	parents = (Previous_Offense_by_Victim);
+	probs = 
+		// True         False         // Previous_Offense_by_Victim 
+		  (0.8,         0.2,          // Yes                        
+		   0,           1);           // No                         ;
+	numcases = 1;
+	whenchanged = 1477017940;
+	belief = (0.48, 0.52);
+	visual V1 {
+		center = (1200, 228);
+		height = 1;
+		};
+	};
+
+node Family_Problems {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (True, False);
+	parents = ();
+	probs = 
+		// True         False        
+		  (0.8,         0.2);
+	whenchanged = 1477009027;
+	belief = (0.8, 0.2);
+	visual V1 {
+		center = (978, 132);
+		height = 5;
+		};
+	};
+
+node Aggressiveness_of_Offender {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Yes, No);
+	parents = ();
+	probs = 
+		// Yes          No           
+		  (0.8,         0.2);
+	whenchanged = 1477017937;
+	belief = (0.8, 0.2);
+	visual V1 {
+		center = (978, 426);
+		height = 7;
+		};
+	};
+
+node Offender_Background {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Bad, Good);
+	inputs = (Weak_punishment_after_offence, Family_Problems, Aggressiveness_of_Offender);
+	parents = (Weak_punishment_after_offense, Family_Problems, Aggressiveness_of_Offender);
+	probs = 
+		// Bad          Good          // Weak_punishment_after_offence Family_Problems Aggressiveness_of_Offender 
+		  (0.9,         0.1,          // True                          True            Yes                        
+		   0.8,         0.2,          // True                          True            No                         
+		   0.75,        0.25,         // True                          False           Yes                        
+		   0.7,         0.3,          // True                          False           No                         
+		   0.5,         0.5,          // False                         True            Yes                        
+		   0.4,         0.6,          // False                         True            No                         
+		   0.3,         0.7,          // False                         False           Yes                        
+		   0.2,         0.8);         // False                         False           No                         ;
+	ExperBase = 1;
+	whenchanged = 1477015626;
+	belief = (0.63776, 0.36224);
+	visual V1 {
+		center = (978, 276);
+		height = 6;
+		};
+	};
+
+node Time_of_the_day {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Day, Night);
+	parents = ();
+	probs = 
+		// Day          Night        
+		  (0.1,         0.9);
+	whenchanged = 1477017899;
+	belief = (0.1, 0.9);
+	visual V1 {
+		center = (156, 126);
+		height = 2;
+		};
+	};
+
+node Party_Setting {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Yes, No);
+	parents = (Time_of_the_day);
+	probs = 
+		// Yes          No            // Time_of_the_day 
+		  (0.3,         0.7,          // Day             
+		   0.7,         0.3);         // Night           ;
+	whenchanged = 1477013153;
+	belief = (0.66, 0.34);
+	visual V1 {
+		center = (342, 258);
+		height = 13;
+		};
+	};
+
+node Alcohol_Victim {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Yes, No);
+	inputs = (Party_Setting);
+	parents = (Party_Setting);
+	probs = 
+		// Yes          No            // Party_Setting 
+		  (0.7,         0.3,          // Yes           
+		   0.5,         0.5);         // No            ;
+	whenchanged = 1477017580;
+	belief = (0.632, 0.368);
+	visual V1 {
+		center = (342, 78);
+		height = 10;
+		};
+	};
+
+node Alcohol_Offender {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Yes, No);
+	inputs = (Family_Problems, Party_Setting);
+	parents = (Family_Problems, Party_Setting);
+	probs = 
+		// Yes          No            // Family_Problems Party_Setting 
+		  (0.9,         0.1,          // True            Yes           
+		   0.6,         0.4,          // True            No            
+		   0.7,         0.3,          // False           Yes           
+		   0.5,         0.5);         // False           No            ;
+	ExperBase = 1;
+	whenchanged = 1477017903;
+	belief = (0.7648, 0.2352);
+	visual V1 {
+		center = (606, 66);
+		height = 11;
+		};
+	};
+
+node Victim_Offender_Relationship {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Yes, No);
+	parents = ();
+	probs = 
+		// Yes          No           
+		  (0.95,        0.05);
+	whenchanged = 1477017591;
+	belief = (0.95, 0.05);
+	visual V1 {
+		center = (786, 360);
+		height = 9;
+		};
+	};
+
+node Assault_location {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (No_Electricity, Ample_Light);
+	parents = (Time_of_the_day, Party_Setting);
+	probs = 
+		// No Electricity Ample Light  // Time_of_the_day Party_Setting 
+		  (0.3,         0.7,          // Day             Yes           
+		   0.1,         0.9,          // Day             No            
+		   0.85,        0.15,         // Night           Yes           
+		   0.8,         0.2);         // Night           No            ;
+	whenchanged = 1477017901;
+	belief = (0.7675, 0.2325);
+	visual V1 {
+		center = (156, 408);
+		height = 12;
+		};
+	};
+
+node Low_patrolling {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (True, False);
+	parents = ();
+	probs = 
+		// True         False        
+		  (0.8,         0.2);
+	whenchanged = 1477017907;
+	belief = (0.8, 0.2);
+	visual V1 {
+		center = (606, 552);
+		height = 14;
+		};
+	};
+
+node Sexual_Assault {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (True, False);
+	parents = (Offender_Background, Alcohol_Victim, Alcohol_Offender, Victim_Offender_Relationship, Assault_location, Low_patrolling);
+	probs = 
+		// True         False         // Offender_Background Alcohol_Victim Alcohol_Offender Victim_Offender_Relationship Assault_location Low_patrolling 
+		  (0.8,         0.2,          // Bad                 Yes            Yes              Yes                          No Electricity   True           
+		   0.4,         0.6,          // Bad                 Yes            Yes              Yes                          No Electricity   False          
+		   0.6,         0.4,          // Bad                 Yes            Yes              Yes                          Ample Light      True           
+		   0.3,         0.7,          // Bad                 Yes            Yes              Yes                          Ample Light      False          
+		   0.6,         0.4,          // Bad                 Yes            Yes              No                           No Electricity   True           
+		   0.4,         0.6,          // Bad                 Yes            Yes              No                           No Electricity   False          
+		   0.5,         0.5,          // Bad                 Yes            Yes              No                           Ample Light      True           
+		   0.3,         0.7,          // Bad                 Yes            Yes              No                           Ample Light      False          
+		   0.6,         0.4,          // Bad                 Yes            No               Yes                          No Electricity   True           
+		   0.3,         0.7,          // Bad                 Yes            No               Yes                          No Electricity   False          
+		   0.5,         0.5,          // Bad                 Yes            No               Yes                          Ample Light      True           
+		   0.2,         0.8,          // Bad                 Yes            No               Yes                          Ample Light      False          
+		   0.4,         0.6,          // Bad                 Yes            No               No                           No Electricity   True           
+		   0.2,         0.8,          // Bad                 Yes            No               No                           No Electricity   False          
+		   0.3,         0.7,          // Bad                 Yes            No               No                           Ample Light      True           
+		   0.4,         0.6,          // Bad                 Yes            No               No                           Ample Light      False          
+		   0.7,         0.3,          // Bad                 No             Yes              Yes                          No Electricity   True           
+		   0.3,         0.7,          // Bad                 No             Yes              Yes                          No Electricity   False          
+		   0.5,         0.5,          // Bad                 No             Yes              Yes                          Ample Light      True           
+		   0.2,         0.8,          // Bad                 No             Yes              Yes                          Ample Light      False          
+		   0.5,         0.5,          // Bad                 No             Yes              No                           No Electricity   True           
+		   0.3,         0.7,          // Bad                 No             Yes              No                           No Electricity   False          
+		   0.4,         0.6,          // Bad                 No             Yes              No                           Ample Light      True           
+		   0.2,         0.8,          // Bad                 No             Yes              No                           Ample Light      False          
+		   0.5,         0.5,          // Bad                 No             No               Yes                          No Electricity   True           
+		   0.2,         0.8,          // Bad                 No             No               Yes                          No Electricity   False          
+		   0.4,         0.6,          // Bad                 No             No               Yes                          Ample Light      True           
+		   0.1,         0.9,          // Bad                 No             No               Yes                          Ample Light      False          
+		   0.3,         0.7,          // Bad                 No             No               No                           No Electricity   True           
+		   0.1,         0.9,          // Bad                 No             No               No                           No Electricity   False          
+		   0.2,         0.8,          // Bad                 No             No               No                           Ample Light      True           
+		   0.3,         0.7,          // Bad                 No             No               No                           Ample Light      False          
+		   0.6,         0.4,          // Good                Yes            Yes              Yes                          No Electricity   True           
+		   0.2,         0.8,          // Good                Yes            Yes              Yes                          No Electricity   False          
+		   0.4,         0.6,          // Good                Yes            Yes              Yes                          Ample Light      True           
+		   0.1,         0.9,          // Good                Yes            Yes              Yes                          Ample Light      False          
+		   0.4,         0.6,          // Good                Yes            Yes              No                           No Electricity   True           
+		   0.2,         0.8,          // Good                Yes            Yes              No                           No Electricity   False          
+		   0.3,         0.7,          // Good                Yes            Yes              No                           Ample Light      True           
+		   0.1,         0.9,          // Good                Yes            Yes              No                           Ample Light      False          
+		   0.4,         0.6,          // Good                Yes            No               Yes                          No Electricity   True           
+		   0.1,         0.9,          // Good                Yes            No               Yes                          No Electricity   False          
+		   0.3,         0.7,          // Good                Yes            No               Yes                          Ample Light      True           
+		   0,           1,            // Good                Yes            No               Yes                          Ample Light      False          
+		   0.2,         0.8,          // Good                Yes            No               No                           No Electricity   True           
+		   0,           1,            // Good                Yes            No               No                           No Electricity   False          
+		   0.1,         0.9,          // Good                Yes            No               No                           Ample Light      True           
+		   0.2,         0.8,          // Good                Yes            No               No                           Ample Light      False          
+		   0.5,         0.5,          // Good                No             Yes              Yes                          No Electricity   True           
+		   0.1,         0.9,          // Good                No             Yes              Yes                          No Electricity   False          
+		   0.3,         0.7,          // Good                No             Yes              Yes                          Ample Light      True           
+		   0,           1,            // Good                No             Yes              Yes                          Ample Light      False          
+		   0.3,         0.7,          // Good                No             Yes              No                           No Electricity   True           
+		   0.1,         0.9,          // Good                No             Yes              No                           No Electricity   False          
+		   0.2,         0.8,          // Good                No             Yes              No                           Ample Light      True           
+		   0,           1,            // Good                No             Yes              No                           Ample Light      False          
+		   0.3,         0.7,          // Good                No             No               Yes                          No Electricity   True           
+		   0,           1,            // Good                No             No               Yes                          No Electricity   False          
+		   0.2,         0.8,          // Good                No             No               Yes                          Ample Light      True           
+		   0,           1,            // Good                No             No               Yes                          Ample Light      False          
+		   0.1,         0.9,          // Good                No             No               No                           No Electricity   True           
+		   0,           1,            // Good                No             No               No                           No Electricity   False          
+		   0,           1,            // Good                No             No               No                           Ample Light      True           
+		   0.1,         0.9);         // Good                No             No               No                           Ample Light      False          ;
+	ExperBase = 1;
+	whenchanged = 1477018246;
+	belief = (0.5246559, 0.4753441);
+	visual V1 {
+		center = (606, 252);
+		height = 4;
+		link 1 {
+			path = ((903, 271), (681, 256));
+			};
+		};
+	};
+
+node Death_of_Victim {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (True, False);
+	parents = (Aggressiveness_of_Offender);
+	probs = 
+		// True         False         // Aggressiveness_of_Offender 
+		  (0.8,         0.2,          // Yes                        
+		   0.1,         0.9);         // No                         ;
+	whenchanged = 1477009452;
+	belief = (0.66, 0.34);
+	visual V1 {
+		center = (978, 516);
+		height = 8;
+		};
+	};
+
+node Stalking {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (True, False);
+	inputs = (Victim_Offender_Relationship, Low_patrolling, Aggressiveness_of_Offender);
+	parents = (Victim_Offender_Relationship, Low_patrolling, Aggressiveness_of_Offender);
+	probs = 
+		// True         False         // Victim_Offender_Relationship Low_patrolling Aggressiveness_of_Offender 
+		  (0.85,        0.15,         // Yes                          True           Yes                        
+		   0.7,         0.3,          // Yes                          True           No                         
+		   0.35,        0.65,         // Yes                          False          Yes                        
+		   0.2,         0.8,          // Yes                          False          No                         
+		   0.95,        0.05,         // No                           True           Yes                        
+		   0.7,         0.3,          // No                           True           No                         
+		   0.3,         0.7,          // No                           False          Yes                        
+		   0.5,         0.5);         // No                           False          No                         ;
+	ExperBase = 1;
+	whenchanged = 1477017935;
+	belief = (0.7234, 0.2766);
+	visual V1 {
+		center = (786, 504);
+		height = 15;
+		link 2 {
+			path = ((681, 533), (712, 524));
+			};
+		link 3 {
+			path = ((914, 453), (851, 478));
+			};
+		};
+	};
+ElimOrder = (Previous_Offense_by_Victim, Death_of_Victim, Time_of_the_day, Stalking, Weak_punishment_after_offense, Family_Problems, Aggressiveness_of_Offender, Sexual_Assault, Offender_Background, Party_Setting, Alcohol_Victim, Alcohol_Offender, Victim_Offender_Relationship, Assault_location, Low_patrolling);
+};
