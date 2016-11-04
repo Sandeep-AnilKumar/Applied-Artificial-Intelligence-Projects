@@ -1,0 +1,534 @@
+// ~->[DNET-1]->~
+
+// File created by GmytrasiewiczP_2 at UIC using Netica 5.24 on Nov 04, 2016 at 00:07:56 UTC.
+
+bnet Sexual_Assault_Bayesian_Networ {
+AutoCompile = TRUE;
+autoupdate = TRUE;
+whenchanged = 1478218075;
+
+visual V1 {
+	defdispform = BELIEFBARS;
+	nodelabeling = TITLE;
+	NodeMaxNumEntries = 50;
+	nodefont = font {shape= "Arial"; size= 9;};
+	linkfont = font {shape= "Arial"; size= 9;};
+	windowposn = (125, 125, 1238, 581);
+	scrollposn = (0, 20);
+	resolution = 72;
+	drawingbounds = (1520, 720);
+	showpagebreaks = FALSE;
+	usegrid = TRUE;
+	gridspace = (6, 6);
+	NodeSet Node {BuiltIn = 1; Color = 0x00e1e1e1;};
+	NodeSet Nature {BuiltIn = 1; Color = 0x00f8eed2;};
+	NodeSet Deterministic {BuiltIn = 1; Color = 0x00d3caa6;};
+	NodeSet Finding {BuiltIn = 1; Color = 0x00c8c8c8;};
+	NodeSet Constant {BuiltIn = 1; Color = 0x00ffffff;};
+	NodeSet ConstantValue {BuiltIn = 1; Color = 0x00ffffb4;};
+	NodeSet Utility {BuiltIn = 1; Color = 0x00ffbdbd;};
+	NodeSet Decision {BuiltIn = 1; Color = 0x00dee8ff;};
+	NodeSet Documentation {BuiltIn = 1; Color = 0x00f0fafa;};
+	NodeSet Title {BuiltIn = 1; Color = 0x00ffffff;};
+	PrinterSetting A {
+		margins = (1270, 1270, 1270, 1270);
+		};
+	};
+
+node Previous_Offense_by_Offender {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Yes, No);
+	parents = ();
+	probs = 
+		// Yes          No           
+		  (0.6,         0.4);
+	whenchanged = 1478216130;
+	belief = (0.6, 0.4);
+	visual V1 {
+		center = (1200, 72);
+		height = 2;
+		};
+	};
+
+node Country {
+	kind = DECISION;
+	discrete = TRUE;
+	chance = DETERMIN;
+	states = (Phillipines, South_Africa, Sweden, Saudi, USA);
+	parents = ();
+	functable = 
+		  (@undef);
+	whenchanged = 1478218075;
+	evidence = Sweden;
+	belief = (0, 0, 1, 0, 0);
+	visual V1 {
+		center = (282, 570);
+		height = 9;
+		};
+	};
+
+node Weak_punishment_after_offense {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (True, False);
+	parents = (Previous_Offense_by_Offender, Country);
+	probs = 
+		// True         False         // Previous_Offense_by_Offender Country      
+		  (0.95,        0.05,         // Yes                          Phillipines  
+		   0.9,         0.1,          // Yes                          South Africa 
+		   0.95,        0.05,         // Yes                          Sweden       
+		   0,           1,            // Yes                          Saudi        
+		   0.8,         0.2,          // Yes                          USA          
+		   0,           1,            // No                           Phillipines  
+		   0,           1,            // No                           South Africa 
+		   0,           1,            // No                           Sweden       
+		   0,           1,            // No                           Saudi        
+		   0,           1);           // No                           USA          ;
+	numcases = 1;
+	whenchanged = 1478216403;
+	belief = (0.57, 0.43);
+	visual V1 {
+		center = (1200, 594);
+		height = 14;
+		};
+	};
+
+node Family_Problems {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (True, False);
+	parents = ();
+	probs = 
+		// True         False        
+		  (0.8,         0.2);
+	whenchanged = 1477009027;
+	belief = (0.8, 0.2);
+	visual V1 {
+		center = (930, 138);
+		height = 11;
+		};
+	};
+
+node Aggressiveness_of_Offender {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Yes, No);
+	parents = ();
+	probs = 
+		// Yes          No           
+		  (0.8,         0.2);
+	whenchanged = 1477017937;
+	belief = (0.8, 0.2);
+	visual V1 {
+		center = (930, 420);
+		height = 12;
+		};
+	};
+
+node Offender_Background {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Bad, Good);
+	inputs = (Weak_punishment_after_offence, Family_Problems, Aggressiveness_of_Offender);
+	parents = (Weak_punishment_after_offense, Family_Problems, Aggressiveness_of_Offender);
+	probs = 
+		// Bad          Good          // Weak_punishment_after_offence Family_Problems Aggressiveness_of_Offender 
+		  (0.9,         0.1,          // True                          True            Yes                        
+		   0.8,         0.2,          // True                          True            No                         
+		   0.75,        0.25,         // True                          False           Yes                        
+		   0.7,         0.3,          // True                          False           No                         
+		   0.5,         0.5,          // False                         True            Yes                        
+		   0.4,         0.6,          // False                         True            No                         
+		   0.3,         0.7,          // False                         False           Yes                        
+		   0.2,         0.8);         // False                         False           No                         ;
+	ExperBase = 1;
+	whenchanged = 1477015626;
+	belief = (0.67484, 0.32516);
+	visual V1 {
+		center = (930, 252);
+		height = 17;
+		};
+	};
+
+node Victim_Gender {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Male, Female);
+	parents = (Country);
+	probs = 
+		// Male         Female        // Country      
+		  (0.85,        0.15,         // Phillipines  
+		   0.1,         0.9,          // South Africa 
+		   0.05,        0.95,         // Sweden       
+		   0.5,         0.5,          // Saudi        
+		   0.15,        0.85);        // USA          ;
+	numcases = 1;
+	whenchanged = 1478216647;
+	belief = (0.05, 0.95);
+	visual V1 {
+		center = (426, 396);
+		height = 8;
+		link 1 {
+			path = ((321, 523), (405, 423));
+			};
+		};
+	};
+
+node Time_of_the_day {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Day, Night);
+	parents = ();
+	probs = 
+		// Day          Night        
+		  (0.1,         0.9);
+	whenchanged = 1477017899;
+	belief = (0, 1);
+	visual V1 {
+		center = (156, 126);
+		height = 1;
+		};
+	};
+
+node Party_Setting {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Yes, No);
+	parents = (Time_of_the_day, Country);
+	probs = 
+		// Yes          No            // Time_of_the_day Country      
+		  (0.9,         0.1,          // Day             Phillipines  
+		   0.5,         0.5,          // Day             South Africa 
+		   0.5,         0.5,          // Day             Sweden       
+		   0.05,        0.95,         // Day             Saudi        
+		   0.4,         0.6,          // Day             USA          
+		   0.6,         0.4,          // Night           Phillipines  
+		   0.5,         0.5,          // Night           South Africa 
+		   0.5,         0.5,          // Night           Sweden       
+		   0,           1,            // Night           Saudi        
+		   0.7,         0.3);         // Night           USA          ;
+	numcases = 1;
+	whenchanged = 1478216947;
+	belief = (0.3333333, 0.6666667);
+	visual V1 {
+		center = (342, 258);
+		height = 7;
+		};
+	};
+
+node Assault_location {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (No_Electricity, Ample_Light);
+	parents = (Time_of_the_day, Party_Setting, Country);
+	probs = 
+		// No Electricity Ample Light  // Time_of_the_day Party_Setting Country      
+		  (0,           1,            // Day             Yes           Phillipines  
+		   0,           1,            // Day             Yes           South Africa 
+		   0,           1,            // Day             Yes           Sweden       
+		   0,           1,            // Day             Yes           Saudi        
+		   0,           1,            // Day             Yes           USA          
+		   0,           1,            // Day             No            Phillipines  
+		   0,           1,            // Day             No            South Africa 
+		   0,           1,            // Day             No            Sweden       
+		   0,           1,            // Day             No            Saudi        
+		   0,           1,            // Day             No            USA          
+		   0.9,         0.1,          // Night           Yes           Phillipines  
+		   0.85,        0.15,         // Night           Yes           South Africa 
+		   0.1,         0.9,          // Night           Yes           Sweden       
+		   0.1,         0.9,          // Night           Yes           Saudi        
+		   0.05,        0.95,         // Night           Yes           USA          
+		   0.8,         0.2,          // Night           No            Phillipines  
+		   0.75,        0.25,         // Night           No            South Africa 
+		   0.2,         0.8,          // Night           No            Sweden       
+		   0.2,         0.8,          // Night           No            Saudi        
+		   0.15,        0.85);        // Night           No            USA          ;
+	whenchanged = 1478216804;
+	evidence = No_Electricity;
+	belief = (1, 0);
+	visual V1 {
+		center = (156, 408);
+		height = 6;
+		};
+	};
+
+node Low_patrolling {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (True, False);
+	parents = (Country);
+	probs = 
+		// True         False         // Country      
+		  (0.85,        0.15,         // Phillipines  
+		   0.95,        0.05,         // South Africa 
+		   0.95,        0.05,         // Sweden       
+		   0.1,         0.9,          // Saudi        
+		   0.2,         0.8);         // USA          ;
+	numcases = 1;
+	whenchanged = 1478216535;
+	belief = (0.95, 0.05);
+	visual V1 {
+		center = (606, 522);
+		height = 15;
+		};
+	};
+
+node Alcohol_Victim {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Yes, No);
+	inputs = (Party_Setting);
+	parents = (Party_Setting);
+	probs = 
+		// Yes          No            // Party_Setting 
+		  (0.7,         0.3,          // Yes           
+		   0.5,         0.5);         // No            ;
+	whenchanged = 1478215673;
+	belief = (0.5666667, 0.4333333);
+	visual V1 {
+		center = (342, 78);
+		height = 4;
+		};
+	};
+
+node Alcohol_Offender {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Yes, No);
+	inputs = (Family_Problems, Party_Setting);
+	parents = (Family_Problems, Party_Setting);
+	probs = 
+		// Yes          No            // Family_Problems Party_Setting 
+		  (0.9,         0.1,          // True            Yes           
+		   0.6,         0.4,          // True            No            
+		   0.7,         0.3,          // False           Yes           
+		   0.5,         0.5);         // False           No            ;
+	ExperBase = 1;
+	whenchanged = 1477017903;
+	belief = (0.6733333, 0.3266667);
+	visual V1 {
+		center = (606, 66);
+		height = 5;
+		};
+	};
+
+node Victim_Offender_Relationship {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Yes, No);
+	parents = ();
+	probs = 
+		// Yes          No           
+		  (0.95,        0.05);
+	whenchanged = 1477017591;
+	belief = (0.95, 0.05);
+	visual V1 {
+		center = (738, 354);
+		height = 10;
+		};
+	};
+
+node Sexual_Assault {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (True, False);
+	parents = (Offender_Background, Alcohol_Victim, Alcohol_Offender, Victim_Offender_Relationship, Assault_location, Low_patrolling, Victim_Gender);
+	probs = 
+		// True         False         // Offender_Background Alcohol_Victim Alcohol_Offender Victim_Offender_Relationship Assault_location Low_patrolling Victim_Gender 
+		  (0.8,         0.2,          // Bad                 Yes            Yes              Yes                          No Electricity   True           Male          
+		   0.8,         0.2,          // Bad                 Yes            Yes              Yes                          No Electricity   True           Female        
+		   0.4,         0.6,          // Bad                 Yes            Yes              Yes                          No Electricity   False          Male          
+		   0.4,         0.6,          // Bad                 Yes            Yes              Yes                          No Electricity   False          Female        
+		   0.6,         0.4,          // Bad                 Yes            Yes              Yes                          Ample Light      True           Male          
+		   0.6,         0.4,          // Bad                 Yes            Yes              Yes                          Ample Light      True           Female        
+		   0.3,         0.7,          // Bad                 Yes            Yes              Yes                          Ample Light      False          Male          
+		   0.3,         0.7,          // Bad                 Yes            Yes              Yes                          Ample Light      False          Female        
+		   0.6,         0.4,          // Bad                 Yes            Yes              No                           No Electricity   True           Male          
+		   0.6,         0.4,          // Bad                 Yes            Yes              No                           No Electricity   True           Female        
+		   0.4,         0.6,          // Bad                 Yes            Yes              No                           No Electricity   False          Male          
+		   0.4,         0.6,          // Bad                 Yes            Yes              No                           No Electricity   False          Female        
+		   0.5,         0.5,          // Bad                 Yes            Yes              No                           Ample Light      True           Male          
+		   0.5,         0.5,          // Bad                 Yes            Yes              No                           Ample Light      True           Female        
+		   0.3,         0.7,          // Bad                 Yes            Yes              No                           Ample Light      False          Male          
+		   0.3,         0.7,          // Bad                 Yes            Yes              No                           Ample Light      False          Female        
+		   0.6,         0.4,          // Bad                 Yes            No               Yes                          No Electricity   True           Male          
+		   0.6,         0.4,          // Bad                 Yes            No               Yes                          No Electricity   True           Female        
+		   0.3,         0.7,          // Bad                 Yes            No               Yes                          No Electricity   False          Male          
+		   0.3,         0.7,          // Bad                 Yes            No               Yes                          No Electricity   False          Female        
+		   0.5,         0.5,          // Bad                 Yes            No               Yes                          Ample Light      True           Male          
+		   0.5,         0.5,          // Bad                 Yes            No               Yes                          Ample Light      True           Female        
+		   0.2,         0.8,          // Bad                 Yes            No               Yes                          Ample Light      False          Male          
+		   0.2,         0.8,          // Bad                 Yes            No               Yes                          Ample Light      False          Female        
+		   0.4,         0.6,          // Bad                 Yes            No               No                           No Electricity   True           Male          
+		   0.4,         0.6,          // Bad                 Yes            No               No                           No Electricity   True           Female        
+		   0.2,         0.8,          // Bad                 Yes            No               No                           No Electricity   False          Male          
+		   0.2,         0.8,          // Bad                 Yes            No               No                           No Electricity   False          Female        
+		   0.3,         0.7,          // Bad                 Yes            No               No                           Ample Light      True           Male          
+		   0.3,         0.7,          // Bad                 Yes            No               No                           Ample Light      True           Female        
+		   0.4,         0.6,          // Bad                 Yes            No               No                           Ample Light      False          Male          
+		   0.4,         0.6,          // Bad                 Yes            No               No                           Ample Light      False          Female        
+		   0.7,         0.3,          // Bad                 No             Yes              Yes                          No Electricity   True           Male          
+		   0.7,         0.3,          // Bad                 No             Yes              Yes                          No Electricity   True           Female        
+		   0.3,         0.7,          // Bad                 No             Yes              Yes                          No Electricity   False          Male          
+		   0.3,         0.7,          // Bad                 No             Yes              Yes                          No Electricity   False          Female        
+		   0.5,         0.5,          // Bad                 No             Yes              Yes                          Ample Light      True           Male          
+		   0.5,         0.5,          // Bad                 No             Yes              Yes                          Ample Light      True           Female        
+		   0.2,         0.8,          // Bad                 No             Yes              Yes                          Ample Light      False          Male          
+		   0.2,         0.8,          // Bad                 No             Yes              Yes                          Ample Light      False          Female        
+		   0.5,         0.5,          // Bad                 No             Yes              No                           No Electricity   True           Male          
+		   0.5,         0.5,          // Bad                 No             Yes              No                           No Electricity   True           Female        
+		   0.3,         0.7,          // Bad                 No             Yes              No                           No Electricity   False          Male          
+		   0.3,         0.7,          // Bad                 No             Yes              No                           No Electricity   False          Female        
+		   0.4,         0.6,          // Bad                 No             Yes              No                           Ample Light      True           Male          
+		   0.4,         0.6,          // Bad                 No             Yes              No                           Ample Light      True           Female        
+		   0.2,         0.8,          // Bad                 No             Yes              No                           Ample Light      False          Male          
+		   0.2,         0.8,          // Bad                 No             Yes              No                           Ample Light      False          Female        
+		   0.5,         0.5,          // Bad                 No             No               Yes                          No Electricity   True           Male          
+		   0.5,         0.5,          // Bad                 No             No               Yes                          No Electricity   True           Female        
+		   0.2,         0.8,          // Bad                 No             No               Yes                          No Electricity   False          Male          
+		   0.2,         0.8,          // Bad                 No             No               Yes                          No Electricity   False          Female        
+		   0.4,         0.6,          // Bad                 No             No               Yes                          Ample Light      True           Male          
+		   0.4,         0.6,          // Bad                 No             No               Yes                          Ample Light      True           Female        
+		   0.1,         0.9,          // Bad                 No             No               Yes                          Ample Light      False          Male          
+		   0.1,         0.9,          // Bad                 No             No               Yes                          Ample Light      False          Female        
+		   0.3,         0.7,          // Bad                 No             No               No                           No Electricity   True           Male          
+		   0.3,         0.7,          // Bad                 No             No               No                           No Electricity   True           Female        
+		   0.1,         0.9,          // Bad                 No             No               No                           No Electricity   False          Male          
+		   0.1,         0.9,          // Bad                 No             No               No                           No Electricity   False          Female        
+		   0.2,         0.8,          // Bad                 No             No               No                           Ample Light      True           Male          
+		   0.2,         0.8,          // Bad                 No             No               No                           Ample Light      True           Female        
+		   0.3,         0.7,          // Bad                 No             No               No                           Ample Light      False          Male          
+		   0.3,         0.7,          // Bad                 No             No               No                           Ample Light      False          Female        
+		   0.6,         0.4,          // Good                Yes            Yes              Yes                          No Electricity   True           Male          
+		   0.6,         0.4,          // Good                Yes            Yes              Yes                          No Electricity   True           Female        
+		   0.2,         0.8,          // Good                Yes            Yes              Yes                          No Electricity   False          Male          
+		   0.2,         0.8,          // Good                Yes            Yes              Yes                          No Electricity   False          Female        
+		   0.4,         0.6,          // Good                Yes            Yes              Yes                          Ample Light      True           Male          
+		   0.4,         0.6,          // Good                Yes            Yes              Yes                          Ample Light      True           Female        
+		   0.1,         0.9,          // Good                Yes            Yes              Yes                          Ample Light      False          Male          
+		   0.1,         0.9,          // Good                Yes            Yes              Yes                          Ample Light      False          Female        
+		   0.4,         0.6,          // Good                Yes            Yes              No                           No Electricity   True           Male          
+		   0.4,         0.6,          // Good                Yes            Yes              No                           No Electricity   True           Female        
+		   0.2,         0.8,          // Good                Yes            Yes              No                           No Electricity   False          Male          
+		   0.2,         0.8,          // Good                Yes            Yes              No                           No Electricity   False          Female        
+		   0.3,         0.7,          // Good                Yes            Yes              No                           Ample Light      True           Male          
+		   0.3,         0.7,          // Good                Yes            Yes              No                           Ample Light      True           Female        
+		   0.1,         0.9,          // Good                Yes            Yes              No                           Ample Light      False          Male          
+		   0.1,         0.9,          // Good                Yes            Yes              No                           Ample Light      False          Female        
+		   0.4,         0.6,          // Good                Yes            No               Yes                          No Electricity   True           Male          
+		   0.4,         0.6,          // Good                Yes            No               Yes                          No Electricity   True           Female        
+		   0.1,         0.9,          // Good                Yes            No               Yes                          No Electricity   False          Male          
+		   0.1,         0.9,          // Good                Yes            No               Yes                          No Electricity   False          Female        
+		   0.3,         0.7,          // Good                Yes            No               Yes                          Ample Light      True           Male          
+		   0.3,         0.7,          // Good                Yes            No               Yes                          Ample Light      True           Female        
+		   0,           1,            // Good                Yes            No               Yes                          Ample Light      False          Male          
+		   0,           1,            // Good                Yes            No               Yes                          Ample Light      False          Female        
+		   0.2,         0.8,          // Good                Yes            No               No                           No Electricity   True           Male          
+		   0.2,         0.8,          // Good                Yes            No               No                           No Electricity   True           Female        
+		   0,           1,            // Good                Yes            No               No                           No Electricity   False          Male          
+		   0,           1,            // Good                Yes            No               No                           No Electricity   False          Female        
+		   0.1,         0.9,          // Good                Yes            No               No                           Ample Light      True           Male          
+		   0.1,         0.9,          // Good                Yes            No               No                           Ample Light      True           Female        
+		   0.2,         0.8,          // Good                Yes            No               No                           Ample Light      False          Male          
+		   0.2,         0.8,          // Good                Yes            No               No                           Ample Light      False          Female        
+		   0.5,         0.5,          // Good                No             Yes              Yes                          No Electricity   True           Male          
+		   0.5,         0.5,          // Good                No             Yes              Yes                          No Electricity   True           Female        
+		   0.1,         0.9,          // Good                No             Yes              Yes                          No Electricity   False          Male          
+		   0.1,         0.9,          // Good                No             Yes              Yes                          No Electricity   False          Female        
+		   0.3,         0.7,          // Good                No             Yes              Yes                          Ample Light      True           Male          
+		   0.3,         0.7,          // Good                No             Yes              Yes                          Ample Light      True           Female        
+		   0,           1,            // Good                No             Yes              Yes                          Ample Light      False          Male          
+		   0,           1,            // Good                No             Yes              Yes                          Ample Light      False          Female        
+		   0.3,         0.7,          // Good                No             Yes              No                           No Electricity   True           Male          
+		   0.3,         0.7,          // Good                No             Yes              No                           No Electricity   True           Female        
+		   0.1,         0.9,          // Good                No             Yes              No                           No Electricity   False          Male          
+		   0.1,         0.9,          // Good                No             Yes              No                           No Electricity   False          Female        
+		   0.2,         0.8,          // Good                No             Yes              No                           Ample Light      True           Male          
+		   0.2,         0.8,          // Good                No             Yes              No                           Ample Light      True           Female        
+		   0,           1,            // Good                No             Yes              No                           Ample Light      False          Male          
+		   0,           1,            // Good                No             Yes              No                           Ample Light      False          Female        
+		   0.3,         0.7,          // Good                No             No               Yes                          No Electricity   True           Male          
+		   0.3,         0.7,          // Good                No             No               Yes                          No Electricity   True           Female        
+		   0,           1,            // Good                No             No               Yes                          No Electricity   False          Male          
+		   0,           1,            // Good                No             No               Yes                          No Electricity   False          Female        
+		   0.2,         0.8,          // Good                No             No               Yes                          Ample Light      True           Male          
+		   0.2,         0.8,          // Good                No             No               Yes                          Ample Light      True           Female        
+		   0,           1,            // Good                No             No               Yes                          Ample Light      False          Male          
+		   0,           1,            // Good                No             No               Yes                          Ample Light      False          Female        
+		   0.1,         0.9,          // Good                No             No               No                           No Electricity   True           Male          
+		   0.1,         0.9,          // Good                No             No               No                           No Electricity   True           Female        
+		   0,           1,            // Good                No             No               No                           No Electricity   False          Male          
+		   0,           1,            // Good                No             No               No                           No Electricity   False          Female        
+		   0,           1,            // Good                No             No               No                           Ample Light      True           Male          
+		   0,           1,            // Good                No             No               No                           Ample Light      True           Female        
+		   0.1,         0.9,          // Good                No             No               No                           Ample Light      False          Male          
+		   0.1,         0.9);         // Good                No             No               No                           Ample Light      False          Female        ;
+	numcases = 1;
+	whenchanged = 1478214010;
+	belief = (0.5983658, 0.4016341);
+	visual V1 {
+		center = (606, 252);
+		height = 3;
+		};
+	};
+
+node Stalking {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (True, False);
+	inputs = (Victim_Offender_Relationship, Low_patrolling, Aggressiveness_of_Offender);
+	parents = (Victim_Offender_Relationship, Low_patrolling, Aggressiveness_of_Offender);
+	probs = 
+		// True         False         // Victim_Offender_Relationship Low_patrolling Aggressiveness_of_Offender 
+		  (0.85,        0.15,         // Yes                          True           Yes                        
+		   0.7,         0.3,          // Yes                          True           No                         
+		   0.35,        0.65,         // Yes                          False          Yes                        
+		   0.2,         0.8,          // Yes                          False          No                         
+		   0.95,        0.05,         // No                           True           Yes                        
+		   0.7,         0.3,          // No                           True           No                         
+		   0.3,         0.7,          // No                           False          Yes                        
+		   0.5,         0.5);         // No                           False          No                         ;
+	ExperBase = 1;
+	whenchanged = 1477017935;
+	belief = (0.79885, 0.20115);
+	visual V1 {
+		center = (744, 444);
+		height = 16;
+		};
+	};
+
+node Death_of_Victim {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (True, False);
+	parents = (Aggressiveness_of_Offender);
+	probs = 
+		// True         False         // Aggressiveness_of_Offender 
+		  (0.8,         0.2,          // Yes                        
+		   0.1,         0.9);         // No                         ;
+	whenchanged = 1477009452;
+	belief = (0.66, 0.34);
+	visual V1 {
+		center = (930, 516);
+		height = 13;
+		};
+	};
+ElimOrder = (Death_of_Victim, Previous_Offense_by_Offender, Stalking, Time_of_the_day, Family_Problems, Weak_punishment_after_offense, Sexual_Assault, Aggressiveness_of_Offender, Alcohol_Victim, Offender_Background, Victim_Gender, Party_Setting, Assault_location, Low_patrolling, Alcohol_Offender, Victim_Offender_Relationship, Country);
+};
