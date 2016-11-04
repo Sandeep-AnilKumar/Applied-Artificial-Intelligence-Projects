@@ -1,5 +1,4 @@
 ##Autonomous Drone using JESS
-##CS-514 Project-1
 
 ###The Domain: - Autonomous Drone
 This is a drone that can run on the road and fly in the sky. The drone is started by moving forward, after that it'll check the surroundings to make sure there are no obstacles. Every time I am taking an input from the user to enter the "Battery-Level" and "Fuel-Level". The maximum value for them is 100% which means battery is fully charged and the fuel tank is completely full. The minimum values for "battery and fuel level" is 10, to keep the drone running. If the user enters a value less than or equal to "10", then the drone stops.
