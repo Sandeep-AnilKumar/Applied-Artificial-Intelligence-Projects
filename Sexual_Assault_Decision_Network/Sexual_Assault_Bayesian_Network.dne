@@ -1,11 +1,11 @@
 // ~->[DNET-1]->~
 
-// File created by GmytrasiewiczP_2 at UIC using Netica 5.24 on Nov 04, 2016 at 00:07:56 UTC.
+// File created by GmytrasiewiczP_2 at UIC using Netica 5.24 on Nov 04, 2016 at 00:15:27 UTC.
 
 bnet Sexual_Assault_Bayesian_Networ {
 AutoCompile = TRUE;
 autoupdate = TRUE;
-whenchanged = 1478218075;
+whenchanged = 1478218524;
 
 visual V1 {
 	defdispform = BELIEFBARS;
@@ -14,7 +14,6 @@ visual V1 {
 	nodefont = font {shape= "Arial"; size= 9;};
 	linkfont = font {shape= "Arial"; size= 9;};
 	windowposn = (125, 125, 1238, 581);
-	scrollposn = (0, 20);
 	resolution = 72;
 	drawingbounds = (1520, 720);
 	showpagebreaks = FALSE;
@@ -190,7 +189,8 @@ node Time_of_the_day {
 	probs = 
 		// Day          Night        
 		  (0.1,         0.9);
-	whenchanged = 1477017899;
+	whenchanged = 1478218524;
+	evidence = Night;
 	belief = (0, 1);
 	visual V1 {
 		center = (156, 126);
