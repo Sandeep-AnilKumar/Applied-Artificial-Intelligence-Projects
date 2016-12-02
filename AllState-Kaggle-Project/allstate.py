@@ -52,7 +52,7 @@ print("done with calculating the MAE for the subset of training data")
 csv_file.close()
 
 #####################################################################
-# Running on the given test data in test.csv to produce loss values #
+# Running on the given test data in test.csv to predicting loss values #
 #####################################################################
 
 start_time = time.time()
